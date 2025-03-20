@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <img src="preview.ico" alt="Logo" class="logo">
+    <title>Dashboard</title>
+    
+    <style>
+        :root {
+            --primary: #00ff88; /* Neon green */
+            --primary-dark: #00cc66;
+            --success: #00ff88;
+            --danger: #ff0066; /* Neon pink */
+            --light: #1a1a1a; /* Dark background */
+            --dark: #ffffff; /* White text */
+            --gray: #666666;
+            --glow: 0 0 15px rgba(0, 255, 136, 0.7); /* Neon glow */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif; /* Futuristic font */
+        }
+        
+        body {
+            background-color: #f5f7fa;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .profile-section {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .profile-dropdown {
+            position: absolute;
+            top: 55px;
+            right: 0;
+            background: rgb(12, 11, 11);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 250px;
+            padding: 1.5rem;
+            display: none;
+            z-index: 100;
+        }
+        
+        .profile-dropdown.show {
+            display: block;
+        }
+        
+        .profile-dropdown h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+            border-bottom: 1px solid #0e0d0d;
+            padding-bottom: 0.5rem;
+        }
+        
+        .profile-info {
+            margin-bottom: 1rem;
+        }
+        
+        .profile-info p {
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .profile-info p span:first-child {
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .profile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+        
+        .dashboard-card {
+                    background: var(--light);
+            border-radius: 12px;
+            box-shadow: var(--glow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px) perspective(1000px) rotateX(5deg);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.5);
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--light);
+            box-shadow: var(--glow);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray);
+            color: var(--dark); /* Light text color */
+        }
+        
+        th {
+            font-weight: 600;
+            color: var(--primary); /* Neon green for headers */
+            text-shadow: var(--glow);
+        }
+        
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.1); /* Light hover effect */
+            color: var(--dark); /* Ensure text remains readable */
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-pending {
+            background-color: #ff0066;
+            color: white;
+            box-shadow: var(--glow);
+        }
+        
+        .badge-processing {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .badge-completed {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            margin-right: 0.25rem;
+        }
+        
+        .print-code {
+            font-family: monospace;
+            font-weight: bold;
+            background-color: #070707;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 0.75rem;
+            top: 0.75rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--light);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 2rem;
+            box-shadow: var(--glow);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .job-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .job-details-item p:first-child {
+            font-weight: 600;
+            color: var(--gray);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+        .logo {
+            height: 50px; /* Adjust size as needed */
+            filter: none; /* Remove glow effect */
+            justify-self: center; /* Center the logo in its grid cell */
+            grid-column: 2; /* Place logo in the center column */
+        }
+
+        .highlight-row {
+            background-color: rgba(255, 0, 102, 0.1); /* Light pink background */
+            border-left: 4px solid #ff0066; /* Neon pink border */
+            color: var(--dark); /* Ensure text is readable */
+        }
+        .profile-section {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            justify-self: end; /* Align profile section to the right */
+            grid-column: 3; /* Place profile section in the right column */
+        }
+        header {
+            background-color: var(--light);
+            padding: 1rem 2rem;
+            box-shadow: var(--glow);
+            display: grid;
+            grid-template-columns: 1fr auto 1fr; /* Three columns: left, center, right */
+            align-items: center;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            text-shadow: var(--glow);
+            margin: 0; /* Remove default margin */
+            justify-self: center; /* Center the title in its grid cell */
+            grid-column: 2; /* Place title in the center column */
+        }
+
+
+       
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-dropdown {
+                width: 100%;
+                right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Dashboard</h1>
+        <div class="profile-section" onclick="toggleProfile()">
+            <span>Profile</span>
+            <div class="profile-icon">SO</div>
+            <div class="profile-dropdown" id="profile-dropdown">
+                <h3>Shop Owner Profile</h3>
+                <div class="profile-info">
+                    <p><span>Name:</span> <span>John Davis</span></p>
+                    <p><span>Shop:</span> <span>Campus Quick Print</span></p>
+                    <p><span>Email:</span> <span>john@quickprint.com</span></p>
+                    <p><span>Phone:</span> <span>(555) 123-4567</span></p>
+                    <p><span>Member Since:</span> <span>Jan 2020</span></p>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn btn-primary" style="width: 100%;" onclick="alert('Profile edit feature will be available soon!')">Edit Profile</button>
+                    <button class="btn btn-danger" style="width: 100%;" onclick="alert('Logout function will be implemented in the future version!')">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <h3 id="pending-count">0</h3>
+                <p>Pending Jobs</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="processing-count">0</h3>
+                <p>In Progress</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="completed-count">0</h3>
+                <p>Completed Today</p>
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <div>
+                <div class="dashboard-card">
+                    <h2 class="card-title">Quick Access</h2>
+                    <div class="form-group">
+                        <label for="print-code">Find by Print Code</label>
+                        <div style="display: flex;">
+                            <input type="text" id="print-code" class="form-control" placeholder="Enter print code (e.g. AC32)">
+                            <button class="btn btn-primary" style="margin-left: 0.5rem;" onclick="findByCode()">Find</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <h2 class="card-title">Manage Jobs</h2>
+                    <button class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem;" onclick="filterJobs('pending')">View Pending</button>
+                    <button class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem;" onclick="filterJobs('processing')">View In Progress</button>
+                    <button class="btn btn-success" style="width: 100%;" onclick="filterJobs('completed')">View Completed</button>
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <h2 class="card-title">
+                    Print Jobs
+                    <span id="current-filter">(All)</span>
+                </h2>
+                
+                <div class="search-box">
+                    <input type="text" id="search-jobs" placeholder="Search by file name, student, or code..." oninput="searchJobs()">
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Print Code</th>
+                            <th>File Name</th>
+                            <th>Student</th>
+                            <th>Uploaded</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobs-table">
+                        <!-- Jobs will be populated here via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="job-details-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Job Details</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="job-details-content">
+                <!-- Job details will be populated here -->
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem;">
+                <button class="btn btn-danger" onclick="closeModal()">Close</button>
+                <button id="modal-action-btn" class="btn btn-success">Start Printing</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Sample data - In a real app, this would come from a backend API
+        let printJobs = [
+            {
+                id: 1,
+                code: "AC32",
+                fileName: "Physics_Assignment.pdf",
+                student: "John Smith",
+                uploadTime: "2025-03-20T09:30:00",
+                status: "pending",
+                pages: 4,
+                copies: 1,
+                paperSize: "A4",
+                color: "Black & White",
+                notes: "Please staple the pages together"
+            },
+            {
+                id: 2,
+                code: "BD45",
+                fileName: "History_Essay.pdf",
+                student: "Emma Johnson",
+                uploadTime: "2025-03-20T10:15:00",
+                status: "pending",
+                pages: 8,
+                copies: 2,
+                paperSize: "A4",
+                color: "Color",
+                notes: ""
+            },
+            {
+                id: 3,
+                code: "CF87",
+                fileName: "Math_Project.pdf",
+                student: "Michael Brown",
+                uploadTime: "2025-03-20T11:00:00",
+                status: "processing",
+                pages: 12,
+                copies: 1,
+                paperSize: "A4",
+                color: "Black & White",
+                notes: "Please print double-sided"
+            },
+            {
+                id: 4,
+                code: "DG21",
+                fileName: "Research_Paper.pdf",
+                student: "Sarah Davis",
+                uploadTime: "2025-03-19T16:45:00",
+                status: "completed",
+                pages: 20,
+                copies: 3,
+                paperSize: "A4",
+                color: "Color",
+                notes: "Need by 5 PM today"
+            }
+        ];
+        
+        // Toggle profile dropdown
+        function toggleProfile() {
+            const dropdown = document.getElementById('profile-dropdown');
+            dropdown.classList.toggle('show');
+            
+            // Close dropdown when clicking outside
+            if (dropdown.classList.contains('show')) {
+                document.addEventListener('click', closeProfileOnClickOutside);
+            } else {
+                document.removeEventListener('click', closeProfileOnClickOutside);
+            }
+        }
+        
+        // Close profile dropdown when clicking outside
+        function closeProfileOnClickOutside(event) {
+            const profileSection = document.querySelector('.profile-section');
+            const dropdown = document.getElementById('profile-dropdown');
+            
+            if (!profileSection.contains(event.target)) {
+                dropdown.classList.remove('show');
+                document.removeEventListener('click', closeProfileOnClickOutside);
+            }
+        }
+        
+        // Initialize the dashboard
+        function initDashboard() {
+            updateJobsTable();
+            updateStatistics();
+        }
+        
+        // Update the jobs table
+        function updateJobsTable(filter = null, searchQuery = null) {
+            const jobsTable = document.getElementById('jobs-table');
+            jobsTable.innerHTML = '';
+            
+            let filteredJobs = printJobs;
+            
+            // Apply status filter if provided
+            if (filter) {
+                filteredJobs = printJobs.filter(job => job.status === filter);
+                document.getElementById('current-filter').textContent = `(${capitalize(filter)})`;
+            } else {
+                document.getElementById('current-filter').textContent = '(All)';
+            }
+            
+            // Apply search query if provided
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                filteredJobs = filteredJobs.filter(job => 
+                    job.fileName.toLowerCase().includes(query) ||
+                    job.student.toLowerCase().includes(query) ||
+                    job.code.toLowerCase().includes(query)
+                );
+            }
+            
+            // Sort jobs: pending first, then processing, then completed
+            filteredJobs.sort((a, b) => {
+                const statusOrder = { 'pending': 0, 'processing': 1, 'completed': 2 };
+                return statusOrder[a.status] - statusOrder[b.status];
+            });
+            
+            filteredJobs.forEach(job => {
+                const row = document.createElement('tr');
+                
+                // Format date
+                const uploadDate = new Date(job.uploadTime);
+                const formattedDate = uploadDate.toLocaleString();
+                
+                // Determine status badge
+                let statusBadge = '';
+                switch(job.status) {
+                    case 'pending':
+                        statusBadge = '<span class="badge badge-pending">Pending</span>';
+                        break;
+                    case 'processing':
+                        statusBadge = '<span class="badge badge-processing">Processing</span>';
+                        break;
+                    case 'completed':
+                        statusBadge = '<span class="badge badge-completed">Completed</span>';
+                        break;
+                }
+                
+                // Determine available actions
+                let actions = '';
+                if (job.status === 'pending') {
+                    actions = `
+                        <button class="btn btn-primary action-btn" onclick="startPrinting(${job.id})">Start</button>
+                        <button class="btn btn-danger action-btn" onclick="cancelJob(${job.id})">Cancel</button>
+                    `;
+                } else if (job.status === 'processing') {
+                    actions = `
+                        <button class="btn btn-success action-btn" onclick="markAsCompleted(${job.id})">Complete</button>
+                        <button class="btn btn-danger action-btn" onclick="cancelJob(${job.id})">Cancel</button>
+                    `;
+                } else {
+                    actions = `
+                        <button class="btn btn-primary action-btn" onclick="showJobDetails(${job.id})">View</button>
+                    `;
+                }
+                
+                row.innerHTML = `
+                    <td><span class="print-code">${job.code}</span></td>
+                    <td>${job.fileName}</td>
+                    <td>${job.student}</td>
+                    <td>${formattedDate}</td>
+                    <td>${statusBadge}</td>
+                    <td>${actions}</td>
+                `;
+                
+                jobsTable.appendChild(row);
+            });
+            
+            // Show "no jobs found" message if the table is empty
+            if (filteredJobs.length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `
+                    <td colspan="6" style="text-align: center; padding: 2rem;">
+                        No jobs found.
+                    </td>
+                `;
+                jobsTable.appendChild(emptyRow);
+            }
+        }
+        
+        // Update dashboard statistics
+        function updateStatistics() {
+            const pendingCount = printJobs.filter(job => job.status === 'pending').length;
+            const processingCount = printJobs.filter(job => job.status === 'processing').length;
+            
+            // Count completed jobs from today only
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const completedToday = printJobs.filter(job => {
+                return job.status === 'completed' && new Date(job.uploadTime) >= today;
+            }).length;
+            
+            document.getElementById('pending-count').textContent = pendingCount;
+            document.getElementById('processing-count').textContent = processingCount;
+            document.getElementById('completed-count').textContent = completedToday;
+        }
+        
+        // Filter jobs by status
+        function filterJobs(status) {
+            updateJobsTable(status);
+        }
+        
+        // Search jobs
+        function searchJobs() {
+            const searchQuery = document.getElementById('search-jobs').value;
+            const currentFilter = document.getElementById('current-filter').textContent;
+            const filter = currentFilter === '(All)' ? null : currentFilter.replace(/[()]/g, '').toLowerCase();
+            updateJobsTable(filter, searchQuery);
+        }
+        
+        // Find job by code
+        function findByCode() {
+            const code = document.getElementById('print-code').value.trim();
+            if (!code) return;
+            
+            const job = printJobs.find(job => job.code.toLowerCase() === code.toLowerCase());
+            if (job) {
+                showJobDetails(job.id);
+                // Clear any filters and highlight this job
+                updateJobsTable();
+                document.getElementById('search-jobs').value = code;
+                searchJobs();
+            } else {
+                alert(`No job found with code: ${code}`);
+            }
+        }
+        
+        // Show job details modal
+        function showJobDetails(jobId) {
+            const job = printJobs.find(job => job.id === jobId);
+            if (!job) return;
+            
+            const uploadDate = new Date(job.uploadTime);
+            const formattedDate = uploadDate.toLocaleString();
+            
+            const modal = document.getElementById('job-details-modal');
+            const content = document.getElementById('job-details-content');
+            const actionBtn = document.getElementById('modal-action-btn');
+            
+            // Set content
+            content.innerHTML = `
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin-bottom: 0.5rem;">Print Job: <span class="print-code">${job.code}</span></h4>
+                    <p style="color: var(--gray);">${job.fileName}</p>
+                </div>
+                
+                <div class="job-details-grid">
+                    <div class="job-details-item">
+                        <p>Student</p>
+                        <p>${job.student}</p>
+                    </div>
+                    <div class="job-details-item">
+                        <p>Uploaded</p>
+                        <p>${formattedDate}</p>
+                    </div>
+                    <div class="job-details-item">
+                        <p>Pages</p>
+                        <p>${job.pages}</p>
+                    </div>
+                    <div class="job-details-item">
+                        <p>Copies</p>
+                        <p>${job.copies}</p>
+                    </div>
+                    <div class="job-details-item">
+                        <p>Paper Size</p>
+                        <p>${job.paperSize}</p>
+                    </div>
+                    <div class="job-details-item">
+                        <p>Color</p>
+                        <p>${job.color}</p>
+                    </div>
+                </div>
+                
+                <div class="job-details-item" style="margin-top: 1rem;">
+                    <p>Notes</p>
+                    <p>${job.notes || 'No notes provided'}</p>
+                </div>
+            `;
+            
+            // Set action button text and behavior based on status
+            if (job.status === 'pending') {
+                actionBtn.textContent = 'Start Printing';
+                actionBtn.className = 'btn btn-primary';
+                actionBtn.onclick = function() {
+                    startPrinting(job.id);
+                    closeModal();
+                };
+            } else if (job.status === 'processing') {
+                actionBtn.textContent = 'Mark as Completed';
+                actionBtn.className = 'btn btn-success';
+                actionBtn.onclick = function() {
+                    markAsCompleted(job.id);
+                    closeModal();
+                };
+            } else {
+                actionBtn.style.display = 'none';
+            }
+            
+            // Show modal
+            modal.style.display = 'flex';
+        }
+        
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('job-details-modal');
+            modal.style.display = 'none';
+            document.getElementById('modal-action-btn').style.display = 'block';
+        }
+        
+        // Start printing a job
+        function startPrinting(jobId) {
+            const job = printJobs.find(job => job.id === jobId);
+            if (!job) return;
+            
+            job.status = 'processing';
+            updateJobsTable();
+            updateStatistics();
+        }
+        
+        // Mark a job as completed
+        function markAsCompleted(jobId) {
+            const job = printJobs.find(job => job.id === jobId);
+            if (!job) return;
+            
+            job.status = 'completed';
+            updateJobsTable();
+            updateStatistics();
+            
+            // In a real app, this would trigger a notification to the student
+            alert(`Notification sent to ${job.student} for print job ${job.code}`);
+        }
+        
+        // Cancel a job
+        function cancelJob(jobId) {
+            if (!confirm('Are you sure you want to cancel this print job?')) return;
+            
+            // In a real app, you might want to move this to an "archived" or "cancelled" state
+            // For this demo, we'll just remove it from the array
+            const jobIndex = printJobs.findIndex(job => job.id === jobId);
+            if (jobIndex !== -1) {
+                printJobs.splice(jobIndex, 1);
+                updateJobsTable();
+                updateStatistics();
+            }
+        }
+        
+        // Helper function to capitalize first letter
+        function capitalize(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        
+        // Initialize dashboard on page load
+        window.onload = initDashboard;
+    </script>
+</body>
+</html>
