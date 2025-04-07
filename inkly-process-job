@@ -1,0 +1,61 @@
+import json
+import boto3
+import random
+import string
+import time
+
+s3 = boto3.client('s3')
+dynamodb = boto3.resource('dynamodb')
+
+BUCKET_NAME = 'inkly-files'
+TABLE_NAME = 'inkly-jobs'  # updated table name
+
+def generate_print_code(length=4):
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+
+def lambda_handler(event, context):
+    try:
+        body = json.loads(event['body'])
+        file_name = body['fileName']
+        file_type = body['fileType']
+
+        print_code = generate_print_code()
+
+        # Generate pre-signed URL
+        upload_url = s3.generate_presigned_url(
+            'put_object',
+            Params={
+                'Bucket': BUCKET_NAME,
+                'Key': file_name,
+                'ContentType': file_type
+            },
+            ExpiresIn=300  # 5 minutes
+        )
+
+        # Save metadata to DynamoDB
+        table = dynamodb.Table(TABLE_NAME)
+        table.put_item(
+            Item={
+                'job_id': print_code,            # matches your table's partition key
+                'file_name': file_name,
+                'status': 'In Queue',
+                'timestamp': int(time.time())
+            }
+        )
+
+        return {
+            'statusCode': 200,
+            'body': json.dumps({
+                'uploadURL': upload_url,
+                'print_code': print_code
+            }),
+            'headers': {
+                'Content-Type': 'application/json'
+            }
+        }
+
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'error': str(e)})
+        }
