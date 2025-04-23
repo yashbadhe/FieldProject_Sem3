@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inkly - Print Queue Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1><span class="logo-text">Inkly</span></h1>
+        </div>
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="search-input" placeholder="Search print requests...">
+        </div>
+        <button id="refresh-btn" class="refresh-btn">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="queue-container">
+                <div class="queue-header">
+                    <h2>Print Queue</h2>
+                    <div class="filter-tabs">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="pending">Pending</button>
+                        <button class="filter-btn" data-filter="printed">Printed</button>
+                    </div>
+                </div>
+                
+                <div class="print-items" id="print-items">
+                    <!-- Print items will be dynamically added here -->
+                </div>
+            </div>
+            
+            <div class="details-container" id="details-container">
+                <h2>Print Details</h2>
+                <div id="no-selection" class="no-selection">
+                    <div class="printer-icon">
+                        <i class="fas fa-print"></i>
+                    </div>
+                    <p>Select a print request to view details</p>
+                </div>
+                <div id="print-details" class="print-details hidden">
+                    <!-- Print details will be shown here when an item is selected -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3>Mark as Done?</h3>
+            <p>This will notify the user that their document has been printed and is ready for collection.</p>
+            <div class="modal-buttons">
+                <button id="cancel-btn" class="cancel-btn">Cancel</button>
+                <button id="confirm-btn" class="confirm-btn">Confirm</button>
+            </div>
+        </div>
+    
+
+    <script src="script.js"></script>
+</body>
+</html>
